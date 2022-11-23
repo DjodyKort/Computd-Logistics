@@ -1,0 +1,4 @@
+numpy
+plotly-express
+pandas
+autopep8
