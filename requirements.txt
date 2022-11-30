@@ -2,3 +2,6 @@ numpy
 plotly-express
 pandas
 autopep8
+scikit-learn
+keras
+tensorflow

@@ -13,3 +13,7 @@ df = pd.read_csv(csv_doc)
 
 # Putting the time difference in a new column
 AddTimeDifferenceToCSV(df, csv_doc)
+
+print(df)
+
+

@@ -42,5 +42,4 @@ new_df = new_df.sort_values(by='Difference', ascending=False)
 new_df = new_df.reset_index(drop=True)
 
 # Looking if this data actually is important to compute the average time difference per city
-
 new_df.to_excel('./dataframes/excel/TimeDifferenceRenoDing.xlsx', index=False)

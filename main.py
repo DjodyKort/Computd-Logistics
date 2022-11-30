@@ -5,9 +5,6 @@ cmd_output = os.popen('pip install -r requirements.txt').read()
 # Local imports
 from py.functions import *
 
-
-
-
 # ========== Declaring Variables ==========
 
 # ========= Start Program =========
