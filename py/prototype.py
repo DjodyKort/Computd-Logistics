@@ -65,8 +65,10 @@ print(training_set, test_set)
 
 # Feature scaling 
 from sklearn.preprocessing import MinMaxScaler
+
 scaler = MinMaxScaler(feature_range=(0,1)) # range is to scale between 0 and 1
 training_set_scaled = scaler.fit_transform(training_set)
+test_set_scaled = scaler.transform(test_set)
 # 
 #  creating a data structure with 60 time steps (hourly) 
 X_train = []
@@ -78,7 +80,15 @@ for i in range(60, 936):
 
 X_train, y_train = np.array(X_train), np.array(y_train)
 
-X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+X_test = []
+y_test = []
+
+for i in range(60, 462):
+  X_test.append(test_set_scaled[i-60:i, 0])
+  y_test.append(test_set_scaled[i,0])
+
+X_test, y_test = np.array(X_test), np.array(y_test)
+
 #print(X_train.shape)
 #train shape is 876, 60, 1  (876 rows, 60 time steps, 1 feature) which means (values, time steps, features)
 
@@ -96,16 +106,24 @@ from keras.callbacks import EarlyStopping
 model = Sequential()
 #Adding the first LSTM layer and some Dropout regularisation
 model.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+print(X_train.shape)
 model.add(Dropout(0.2))
+print(X_train.shape)
 # Adding a second LSTM layer and some Dropout regularisation
 model.add(LSTM(units = 50, return_sequences = True))  
+print(X_train.shape)
 model.add(Dropout(0.2))
+
 # Adding a third LSTM layer and some Dropout regularisation
 model.add(LSTM(units = 50, return_sequences = True))
+
 model.add(Dropout(0.2))
+
 # Adding a fourth LSTM layer and some Dropout regularisation
 model.add(LSTM(units = 50))
+
 model.add(Dropout(0.2))
+
 # Adding the output layer
 model.add(Dense(units = 1))
 
@@ -114,3 +132,19 @@ model.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
 # Fitting the RNN to the Training set
 model.fit(X_train, y_train, epochs = 5, batch_size = 32)
+
+trainpredict = model.predict(X_train)
+
+from sklearn.metrics import mean_squared_error
+print(trainpredict.shape)
+trainpredict = scaler.inverse_transform(trainpredict)
+y_train = scaler.inverse_transform([y_train])
+trainmse = mean_squared_error(y_train[0], trainpredict[:,0])
+
+#test predictions
+testpredict = model.predict(X_test)
+print(testpredict.shape)
+testpredict = scaler.inverse_transform(testpredict)
+y_test = scaler.inverse_transform([y_test])
+testmse = mean_squared_error(y_test[0], testpredict[:,0]) 
+print( trainmse,  testmse)
