@@ -6,22 +6,28 @@ import numpy as np
 import plotly.express as px
 import math
 from sklearn.ensemble import RandomForestRegressor
-import keras
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import LSTM
-from keras.layers import Dropout
-from keras.layers import *
-from keras.callbacks import EarlyStopping
 
 # ======== Declaring Variables =========
 df = pd.read_csv('./dataframes/csv/OrdersCleanedNew3.csv')
 
 # ========= Start Program =========
+#print(df)
+
+#drop NANs
+# df.dropna(how='all')
+#print(df)
+
+# Product Names
+#unique_productNames = df['Product Name'].unique()
+
 # States
 unique_states = df['State'].unique()
 
+# Printing
+#print(f"{unique_productNames}\n\n{unique_states}")
+
 df_pr = df[['City','State','Quantity','Time Difference in Days','isCOD', 'Date Placed']]
+#print(df_pr.dtypes)
 
 #first convert the objects to categories 
 df_pr['State'] = df_pr['State'].astype('category')
@@ -41,7 +47,6 @@ df_pr['City_cat'] = df_pr['City'].cat.codes
 # Deleting the seconds from the "Date Placed" Catogory
 df_pr['Date Placed'] = df_pr['Date Placed'].str.slice(0, -3)
 
-
 #first convert the objects to categories 
 df_pr['isCOD'] = df_pr['isCOD'].astype('category')
 #convert categories to number representations
@@ -53,9 +58,10 @@ df_pr['Date Placed_'] = pd.to_datetime(df_pr['Date Placed'])
 print(df_pr)
 
 # split the df to train and test 
-training_set = df_pr.iloc[:936, [3]].values 
-test_set = df_pr.iloc[936:, [3]].values 
 
+training_set = df_pr.iloc[:936, [3,6,7]].values 
+test_set = df_pr.iloc[936:, [3,6,7]].values 
+print(training_set, test_set)
 
 # Feature scaling 
 from sklearn.preprocessing import MinMaxScaler
@@ -95,7 +101,6 @@ from keras.layers import Dropout
 from keras.layers import *
 from keras.callbacks import EarlyStopping
 
-print(f"X_train.shape: {X_train.shape[1]}")	
 # Initializing the LTSM 
 
 model = Sequential()
@@ -126,40 +131,7 @@ model.add(Dense(units = 1))
 model.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
 # Fitting the RNN to the Training set
-model.fit(X_train, y_train, epochs = 1, batch_size = 32)
-
-
-
-
-test_set_scaled = scaler.fit(test_set)
-X_test = []
-y_test = []
-for i in range(60, 462):
-    X_test.append(test_set[i-60:i, 0])
-    y_test.append(test_set[i, 0])
-X_test, y_train = np.array(X_test), np.array(y_test)
-X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
-print(X_test.shape)
-# test shape is 402, 60, 1  (402 rows, 60 time steps, 1 feature) which means (values, time steps, features)
-
-# train predict 
-trainPredict = model.predict(X_train)
-print(trainPredict.shape)
-trainPredict = scaler.inverse_transform(trainPredict)
-
-# test predict
-testPredict = model.predict(X_test)
-testPredict = scaler.inverse_transform(testPredict)
-
-
-# results 
-import math
-from sklearn.metrics import mean_squared_error
-
-trainScore = math.sqrt(mean_squared_error(y_train[0], trainPredict[:,0]))
-print('Train Score: %.2f RMSE' % (trainScore))
-testScore = math.sqrt(mean_squared_error(y_test[0], testPredict[:,0]))
-print('Test Score: %.2f RMSE' % (testScore))
+model.fit(X_train, y_train, epochs = 5, batch_size = 32)
 
 trainpredict = model.predict(X_train)
 
