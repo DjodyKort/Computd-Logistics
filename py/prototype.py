@@ -82,8 +82,7 @@ X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
 #print(X_train.shape)
 #train shape is 876, 60, 1  (876 rows, 60 time steps, 1 feature) which means (values, time steps, features)
 
-# START MODELING 
-import tensorflow.compat.v2 as tf
+# START MODELING
 import keras 
 from keras.models import Sequential
 from keras.layers import Dense
@@ -99,7 +98,7 @@ model = Sequential()
 model.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
 model.add(Dropout(0.2))
 # Adding a second LSTM layer and some Dropout regularisation
-model.add(LSTM(units = 50, return_sequences = True))
+model.add(LSTM(units = 50, return_sequences = True))  
 model.add(Dropout(0.2))
 # Adding a third LSTM layer and some Dropout regularisation
 model.add(LSTM(units = 50, return_sequences = True))
@@ -115,9 +114,3 @@ model.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
 # Fitting the RNN to the Training set
 model.fit(X_train, y_train, epochs = 5, batch_size = 32)
-
-    
-
-
-
-
