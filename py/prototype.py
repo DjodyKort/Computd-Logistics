@@ -25,15 +25,12 @@ unique_states = df['State'].unique()
 
 # Printing
 #print(f"{unique_productNames}\n\n{unique_states}")
-
 df_pr = df[['City','State','Quantity','Time Difference in Days','isCOD', 'Date Placed']]
 #print(df_pr.dtypes)
-
 #first convert the objects to categories 
 df_pr['State'] = df_pr['State'].astype('category')
 #convert categories to number representations
 df_pr['State_cat'] = df_pr['State'].cat.codes
-
 # sort
 df_pr = df_pr.sort_values(by=['State_cat'])
 df_pr = df_pr[3:]
@@ -43,17 +40,14 @@ df_pr = df_pr[3:]
 df_pr['City'] = df_pr['City'].astype('category')
 #convert categories to number representations
 df_pr['City_cat'] = df_pr['City'].cat.codes
-
 # Deleting the seconds from the "Date Placed" Catogory
 df_pr['Date Placed'] = df_pr['Date Placed'].str.slice(0, -3)
-
 #first convert the objects to categories 
 df_pr['isCOD'] = df_pr['isCOD'].astype('category')
 #convert categories to number representations
 df_pr['isCOD_cat'] = df_pr['isCOD'].cat.codes
-
 #convert the date string into datetime format 
-df_pr['Date Placed_'] = pd.to_datetime(df_pr['Date Placed'])
+df_pr['Date Placed'] = pd.to_datetime(df_pr['Date Placed'])
     
 print(df_pr)
 
@@ -69,8 +63,7 @@ from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler(feature_range=(0,1)) # range is to scale between 0 and 1
 training_set_scaled = scaler.fit_transform(training_set)
 test_set_scaled = scaler.transform(test_set)
-# 
-#  creating a data structure with 60 time steps (hourly) 
+#creating a data structure with 60 time steps (hourly) 
 X_train = []
 y_train = []
 
@@ -131,15 +124,15 @@ model.add(Dense(units = 1))
 model.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
 # Fitting the RNN to the Training set
-model.fit(X_train, y_train, epochs = 5, batch_size = 32)
+model.fit(X_train, y_train, epochs = 5)
 
 trainpredict = model.predict(X_train)
 
 from sklearn.metrics import mean_squared_error
 print(trainpredict.shape)
-trainpredict = scaler.inverse_transform(trainpredict)
+train_predict = scaler.inverse_transform(trainpredict)
 y_train = scaler.inverse_transform([y_train])
-trainmse = mean_squared_error(y_train[0], trainpredict[:,0])
+trainmse = mean_squared_error(y_train[0], train_predict[:,0])
 
 #test predictions
 testpredict = model.predict(X_test)
