@@ -52,7 +52,7 @@ df_pr['Date Placed'] = pd.to_datetime(df_pr['Date Placed'])
 print(df_pr)
 
 # split the df to train and test 
-
+# City_cat, isCOD_cat, Date Placed
 training_set = df_pr.iloc[:936, [3,6,7]].values 
 test_set = df_pr.iloc[936:, [3,6,7]].values 
 print(training_set, test_set)
@@ -140,4 +140,4 @@ print(testpredict.shape)
 testpredict = scaler.inverse_transform(testpredict)
 y_test = scaler.inverse_transform([y_test])
 testmse = mean_squared_error(y_test[0], testpredict[:,0]) 
-print( trainmse,  testmse)
+print(trainmse,  testmse)
